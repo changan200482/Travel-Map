@@ -30,3 +30,5 @@ coverage
 *.tsbuildinfo
 
 index.html
+.venv
+backEnd

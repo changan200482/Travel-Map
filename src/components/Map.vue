@@ -3,12 +3,11 @@
 </template>
   
 <style scoped>
-    .container {
-        width: 100vh;
-        height: 100vh;
+    .anchorBL {
+        display: none;
     }
 </style>
-  
+    
 <script setup>
 import { ref, onMounted } from 'vue';
 

@@ -4,10 +4,9 @@ import HomeView from './views/HomeView.vue'
 
 
 <template>
-	<HomeView />
+	<HomeView id="mainView"/>
 </template>
 
 
 <style scoped>
-
 </style>
