@@ -1,76 +1,75 @@
 <template>
-    <div class="container" ref="mapContainer"></div>
+    <div class="container" ref="container"></div>
 </template>
   
 <style scoped>
     .anchorBL {
         display: none;
     }
+    html,body,#container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0
+        }
+        .info {
+            z-index: 999;
+            width: auto;
+            padding: 10px;
+            margin-left: 10px;
+            position: fixed;
+            top: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #666;
+            box-shadow: 0 2px 6px 0 rgba(27, 142, 236, 0.5);
+        }
+        .selbox {
+            margin: 8px 0;
+        }
+        select {
+            width: 180px;
+            height: 30px;
+            border: 1px solid #ddd;
+        }
 </style>
     
 <script setup>
 import { ref, onMounted } from 'vue';
 
-const mapContainer = ref(null);
+const container = ref(null);
 
 onMounted(() => {
     try {
         // 确保地图已加载
         const { BMapGL } = window;
-
-        if (typeof window.BMapGL === 'undefined') {
-        throw new Error('BMapGL 未定义， 请检查百度地图API脚本是否正确加载');
-        }
-        // 初始化百度地图
-        const map = new BMapGL.Map(mapContainer.value);
-        const point = new BMapGL.Point(116.404, 39.915);
+    const map = new BMapGL.Map(container.value);
+    const point = new BMapGL.Point(116.404, 39.915);
         map.centerAndZoom(point, 10);
-        map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
+        map.enableScrollWheelZoom(true);
+    var zoomCtrl = new BMapGL.ZoomControl();
+    map.addControl(zoomCtrl);
 
-        map.setMapStyleV2({ styleJson: darkStyle });
-        var fillLayer = null;
+    // --- 添加行政区划 ---
+    var dist = new BMapGL.DistrictLayer({
+        name: '(山东省)',
+        kind: 1,
+        fillColor: '#618bf8',
+        fillOpacity: 1,
+        strokeColor: '#daeafa',
+        viewport: true
+    });
+    map.addDistrictLayer(dist);
 
-
-        function addFillLayer() {
-        fetch("https://mapopen-pub-jsapigl.bj.bcebos.com/svgmodel/fillLayerData.json").then(res => {
-            return res.json();
-        }).then(testFillData => {
-            if (!fillLayer) {
-                fillLayer = new BMapGL.FillLayer({
-                    crs: 'GCJ02',
-                    enablePicked: true,
-                    autoSelect: true,
-                    pickWidth: 30,
-                    pickHeight: 30,
-                    selectedColor: 'green', // 悬浮选中项颜色
-                    border: true,
-                    style: {
-                        fillColor: ['case', ['boolean', ['feature-state', 'picked'], false], 'red', ['match', ['get', 'name'], '海淀区', '#ce4848', '朝阳区', 'blue', '通州区', 'blue', '丰台区', '#6704ff', '房山区', '#6704ff', 'orange']],
-                        fillOpacity: .3,
-                        strokeWeight: 1,
-                        strokeColor: 'blue',
-                    }
-                });
-
-                fillLayer.addEventListener('click', function (e) {
-                    if (e.value.dataIndex !== -1 && e.value.dataItem) {
-                        console.log('click', e.value.dataItem);
-                        // 使用样式配置，实现单选或多选效果
-                        // this.updateState(e.value.dataIndex, { picked: true }, true);
-                    }
-                })
-
-            }
-            map.addNormalLayer(fillLayer);
-            fillLayer.setData(testFillData);
-        })
-        }
-        // 移除图层
-        function removeFillLayer() {
-            map.removeNormalLayer(fillLayer);
-        }
-
-        addFillLayer();
+    // --- 行政区划添加鼠标事件 ---
+    dist.addEventListener('mouseover', function (e) {
+        e.currentTarget.setFillColor('#9169db');
+    });
+    dist.addEventListener('mouseout', function (e) {
+        e.currentTarget.setFillColor(e.currentTarget.style.fillColor);
+    });
     }
    
     catch (error) {
