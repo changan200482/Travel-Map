@@ -15,7 +15,7 @@
         border-radius: 4px;
     }
     #buttonCard {
-        border-radius: 6px;
+        border-radius: 1rem;
     }
 </style>
 
