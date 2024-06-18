@@ -10,8 +10,9 @@
                     <a-form-item field="post" label="密码">
                         <a-input v-model="form.post" ></a-input>
                     </a-form-item>
+                    <a-button type="primary" @click="load">登录 </a-button> 
                     </a-form>
-                    <a-link @click="zhuce">注册新用户</a-link>   
+                    <a-link @click="zhuce">注册新用户</a-link>               
             </a-modal>                                              <!--登陆界面对话框-->
 
             <a-modal v-model:visible="visible1" title="注册" @cancel="handleCancel1" @before-ok="handleBeforeOk1" >
@@ -33,17 +34,25 @@
                     <a-form :model="form1">
                         <a-result status="success" title="注册结果：" >
                             <template #subtitle>
-                            注册成功！
+                              注册成功！
                             </template>
                         </a-result>
                     </a-form>
             </a-modal>                                              <!--注册结果对话框-->
             <!-- 因为界面中只能同时存在一个对话框，所以利用visible="visible--x"来选择呈现出哪一个对话框-->
             <hr>
-            <icon-more class="userCard" title="更多信息"/>
+            <a-popover position="left">
+               <icon-more class="userCard"/>
+               <template #content>
+                <h4>开发者信息</h4>
+                <a-space>
+                  <a-link href="C:\Users\王\Desktop\网页\HTML\w.html" >Mr.W</a-link>
+                </a-space>
+              </template>
+            </a-popover>
         </div>
         <div class="functionalModule">
-            <a-tooltip content="添加留言" position="left">
+          <a-tooltip content="添加留言" position="left">
                 <icon-plus class="iconBox" title="添加留言"/>
             </a-tooltip>
         </div>
@@ -167,6 +176,14 @@ export default {
      visible.value = true;
     }
 
+    const load = () => {
+      visible.value = false;
+    }
+
+    const lianjie1 = () => {
+      window.open("C:\Users\王\Desktop\网页\HTML\w.html");
+    }
+
     return {
       visible,
       form,
@@ -182,6 +199,8 @@ export default {
       zhuce1,
       handleBeforeOk2,
       handleCancel2,
+      load,
+      lianjie1
     }
   },
   

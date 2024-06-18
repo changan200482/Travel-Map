@@ -5,16 +5,31 @@
         </a-tooltip>
 
         <div class="toolbox">
-            <a-tooltip content="更多工具" position="bottom">
-                <icon-double-right id="toolsIcon"/>
-            </a-tooltip>
+            <a-popover position="right" trigger="click" default-popup-visible="true">               
+                <icon-apps id="toolsIcon"/>
+                    <template #content>
+                        <a-button @click="handleClick">Open Modal</a-button>
+                            <a-modal v-model:visible="visible" @ok="handleOk" @cancel="handleCancel" draggable="true">
+                                <template #title>
+                                    Title
+                                </template>
+                                <div id="r-result"></div>
+                            </a-modal>
+                        <a-button>步行路线规划</a-button>
+                        <a-button>公交、地铁路线规划</a-button>
+                    </template>
+            </a-popover>
         </div>
+
+        
+
   </div>
+ 
 
 </template>
 
 <style scoped>
-    .toolbox {
+        .toolbox {
         background-color: aliceblue;
         border-radius: 0.5rem;
         width: 2.5rem;
@@ -28,8 +43,48 @@
         height: 1.5rem;
         cursor: pointer;
     }
+    #r-result,#r-result table{
+        width:100%;
+        height:100%;
+    }
 </style>
 
-<script setup>
+<script>
+import { onMounted } from 'vue';
+import bus from '@/utils/eventBus'
+import EVENTS from '@/utils/EVENTS'
+import { ref } from 'vue'
+let travelmap =ref('');     //定义一个travelmap来接收传过来的值
+export default {
+  setup() {
+    bus.on(EVENTS.SENDTOBROTHER, (data) => {          //传值
+        travelmap = data;});
+    
+    const visible = ref(false);
+
+    const handleClick = () => {
+      visible.value = true;
+
+    };
+    const handleOk = () => {
+      visible.value = true;
+
+    };
+    const handleCancel = () => {
+      visible.value = true;
+    }
+
+    return {
+      visible,
+      handleClick,
+      handleOk,
+      handleCancel
+    }
+  },
+}
+
 
 </script>
+
+ 
+
