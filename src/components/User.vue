@@ -1,10 +1,10 @@
 <template>
     <div :style="{ display: 'flex', flexDirection: 'column', gap: '1rem' }">
-        <div id="userBox">
+      <div id="userBox">
             <icon-user @click="handleClick" class="userCard" title="个人信息"/>   
-            <a-modal v-model:visible="visible" title="用户登录界面名（可改）" @cancel="handleCancel" @before-ok="handleBeforeOk" >
+            <a-modal v-model:visible="visible" title="用户登录界面名（可改）" @cancel="handleCancel" @before-ok="handleBeforeOk" width="520px" >
                     <a-form :model="form">
-                    <a-form-item field="name" label="用户名">
+                    <a-form-item field="name" label="用户/邮箱名">
                         <a-input v-model="form.name" ></a-input>
                     </a-form-item>
                     <a-form-item field="post" label="密码">
@@ -15,9 +15,9 @@
                     <a-link @click="zhuce">注册新用户</a-link>               
             </a-modal>                                              <!--登陆界面对话框-->
 
-            <a-modal v-model:visible="visible1" title="注册" @cancel="handleCancel1" @before-ok="handleBeforeOk1" >
+            <a-modal v-model:visible="visible1" title="注册" @cancel="handleCancel1" @before-ok="handleBeforeOk1" width="550px">
                     <a-form :model="form1">
-                        <a-form-item field="name" label="请输入您的用户名">
+                        <a-form-item field="name" label="请输入您的邮箱">
                             <a-input v-model="form1.name" ></a-input>
                         </a-form-item>
                         <a-form-item field="post" label="请输入您的密码">

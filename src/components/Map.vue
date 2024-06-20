@@ -50,8 +50,8 @@ onMounted(() => {
     try {
         const { BMapGL } = window;
         const map = new BMapGL.Map(container.value);
-        const point = new BMapGL.Point(116.404, 39.915);
-        map.centerAndZoom(point, 10);
+        //const point = new BMapGL.Point(116.404, 39.915);
+       // map.centerAndZoom(point, 10);
         map.enableScrollWheelZoom(true);
         var zoomCtrl = new BMapGL.ZoomControl();
         map.addControl(zoomCtrl);
@@ -84,15 +84,32 @@ onMounted(() => {
 
             // 设置当前点击区划为透明
             e.currentTarget.setFillOpacity(0); // 设置透明度，例如0.5为半透明
+            
         });
+
         function sendNumber() {
-            bus.emit(EVENTS.SENDTOBROTHER, map)
+            bus.emit(EVENTS.SENDTOBROTHER, map) // 更改此处为 map，而非 ref(map)
         }  // 传值，自定义事件向兄弟组件传递数据
         sendNumber();
     }
     catch (error) {
         console.error('脚本加载失败:', error);
     }
+
+// map.addEventListener('click',function(e){
+//     var latlng = e.latlng;
+//     Marker = new BMapGL.Marker(latlng);
+//     var geoc = new BMapGL.Geocoder();
+//     console.log(latlng);
+//     geoc.getLocation(latlng, function(rs){
+//                   var addComp = rs.addressComponents;
+//                   var startAddress = addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber;
+//                   console.log(startAddress);
+//                 });            
+// });
+
+
+
 });
 
 </script>
