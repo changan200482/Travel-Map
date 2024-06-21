@@ -5,16 +5,25 @@
         </a-tooltip>
 
         <div class="toolbox">
-            <a-popover position="right" trigger="click" default-popup-visible="true">               
-                <icon-apps id="toolsIcon"/>
+            <a-popover position="right" trigger="click" >               
+                <icon-compass id="toolsIcon"/>
                     <template #content>
-                        <a-button @click="abc()">驾车路线规划</a-button>
-                            
-                        <a-button>步行路线规划</a-button>
-                        <a-button>公交、地铁路线规划</a-button>
+                        <a-button @click="dianxuan()">点选路线规划</a-button>
+                        <a-button @click="handleClick">输入路线规划</a-button>
                     </template>
             </a-popover>
         </div>
+        <a-modal v-model:visible="visible" title="路线查询" @cancel="handleCancel" :on-before-ok="handleBeforeOk" unmountOnClose draggable>
+          <a-form :model="form">
+            <a-form-item field="name" label="请输入起点：">
+              <a-input v-model="form.start" ></a-input>
+            </a-form-item>
+            <a-form-item field="post" label="请输入终点：">
+              <a-input v-model="form.end" ></a-input>
+            </a-form-item>
+            <a-button type="primary" @click="chaxun">查询</a-button> 
+          </a-form>
+        </a-modal> 
   </div>
  
 </template>
@@ -61,7 +70,7 @@
 </style>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted,reactive } from 'vue';
 import bus from '@/utils/eventBus';
 import EVENTS from '@/utils/EVENTS';
 
@@ -101,7 +110,6 @@ export default {
               endMarker = new BMapGL.Marker(latlng);
               map.value.addOverlay(endMarker);
               alert("已设置终点，开始搜索路线");
-
               // 将终点坐标转换为地址
               geocoder.getLocation(latlng, function(rs){
                   var addComp = rs.addressComponents;
@@ -164,15 +172,44 @@ export default {
       removeMapListeners();
     });
 
-    // 移除abc方法调用，因为它不再必要
-    function abc(){
+    function dianxuan(){
       initMapListeners(); // 地图实例接收到后初始化监听器
       setupWalkingRoute(); // 同时初始化 WalkingRoute
     }
+    const visible = ref(false);
+    const form = reactive({
+      start: '',
+      end: ''
+    });
+const handleClick = () => {
+  visible.value = true;
+  initMapListeners(); // 地图实例接收到后初始化监听器
+  setupWalkingRoute(); // 同时初始化 WalkingRoute
+ 
+};
+
+    const handleOk = () => {
+      visible.value = false;
+    };
+
+const handleCancel = () => {
+  visible.value = false;
+}
+function chaxun(){
+  if (map.value) {
+  walking.search(form.start, form.end);
+  }
+}
     return {
-      searchRoute, // 确保searchRoute逻辑正确且依赖于walking.value
-      abc,
-      initMapListeners
+      searchRoute, 
+      dianxuan,
+      initMapListeners,
+      handleCancel,
+      handleOk,
+      handleClick,
+      visible,
+      form,
+      chaxun
     };
   },
 };
