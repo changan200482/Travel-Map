@@ -5,16 +5,16 @@
           <!--登陆界面对话框-->
             <a-modal v-model:visible="loginVisible" title="账号登入" @cancel="loginCancel" @before-ok="loginBeforeOk" width="520px" >
                 <a-form :model="loginForm">
-                    <a-form-item field="acount">
+                    <a-form-item field="acount" label="邮箱：">
                       <a-input 
                       v-model="loginForm.acount"
                       placeholder="请输入邮箱" allow-clear />
                     </a-form-item>
 
-                    <a-form-item field="password">
+                    <a-form-item field="password" label="密码：">
                       <a-input-password
                       v-model="loginForm.password"
-                      placeholder="密码"
+                      placeholder="请输入密码"
                       allow-clear
                       />
                     </a-form-item>
@@ -25,30 +25,30 @@
             </a-modal>
             <!--注册界面对话框-->
             <a-modal v-model:visible="registerVisible" title="注册" @cancel="registerCancel" @before-ok="registerBeforeOk" width="550px">
-                    <a-form :model="registerForm">
-                        <a-form-item field="acount">
-                            <a-input 
-                            v-model="registerForm.name"
-                            placeholder="请输入您的用户名"/>
-                        </a-form-item>
-                        <a-form-item field="acount">
-                            <a-input 
-                            v-model="registerForm.acount"
-                            placeholder="请输入您的邮箱"/>
-                        </a-form-item>
-                        <a-form-item field="password">
-                            <a-input-password
-                            v-model="registerForm.password" 
-                            placeholder="请输入您的密码"/>
-                        </a-form-item>
-                        <a-form-item field="confirmPassword">
-                            <a-input-password
-                            v-model="registerForm.confirmPassword"
-                            placeholder="请确认您的密码"
-                            />
-                        </a-form-item>
-                        <a-button type="primary" @click="register">注册</a-button>
-                    </a-form>
+              <a-form :model="registerForm">
+                <a-form-item field="acount">
+                    <a-input 
+                    v-model="registerForm.name"
+                    placeholder="请输入您的用户名"/>
+                </a-form-item>
+                <a-form-item field="acount">
+                    <a-input 
+                    v-model="registerForm.acount"
+                    placeholder="请输入您的邮箱"/>
+                </a-form-item>
+                <a-form-item field="password">
+                    <a-input-password
+                    v-model="registerForm.password" 
+                    placeholder="请输入您的密码"/>
+                </a-form-item>
+                <a-form-item field="confirmPassword">
+                    <a-input-password
+                    v-model="registerForm.confirmPassword"
+                    placeholder="请确认您的密码"
+                    />
+                </a-form-item>
+                <a-button type="primary" @click="register">注册</a-button>
+              </a-form>
             </a-modal>                                              
 
 
@@ -80,36 +80,36 @@
 
 <style scoped>
     hr{
-        width: 2rem;
-        margin: auto;
+      width: 2rem;
+      margin: auto;
     }
 
     #userBox {
-        display: flex;
-        flex-direction: column;
-        background-color: aliceblue;
-        border-radius: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      background-color: aliceblue;
+      border-radius: 0.8rem;
     }
 
     .userCard {
-        margin: 0.7rem;
-        width: 2rem;
-        height: 2rem;
-        cursor: pointer;
+      margin: 0.7rem;
+      width: 2rem;
+      height: 2rem;
+      cursor: pointer;
     }
 
     .functionalModule {
-        background-color: aliceblue;
-        border-radius: 0.8rem;
+      background-color: aliceblue;
+      border-radius: 0.8rem;
     }
     
     .iconBox {
-        display: flex;
-        text-align: center;
-        margin: 0.6rem;
-        width: 2.2rem;
-        height: 2.1rem;
-        cursor: pointer;
+      display: flex;
+      text-align: center;
+      margin: 0.6rem;
+      width: 2.2rem;
+      height: 2.1rem;
+      cursor: pointer;
     }
 
 </style>
@@ -142,6 +142,7 @@
     password: ''
   });                                      
 
+//登录函数，通过axios.post()来向后端发送请求，根据后端返回的数据来判断登录是否成功
   const login = (event) => {
 
     event.preventDefault(); // 防止表单的默认提交行为
@@ -185,7 +186,7 @@
         console.log(error)
       })
     }
-  };                                                           //登录函数，通过axios.post()来向后端发送请求，根据后端返回的数据来判断登录是否成功
+  };
 
   const registerVisible= ref(false);
 
@@ -286,10 +287,5 @@
         });
     }
 };
-
-
-  const lianjie1 = () => {
-    window.open("C:\Users\王\Desktop\网页\HTML\w.html");
-  }
 
 </script>
