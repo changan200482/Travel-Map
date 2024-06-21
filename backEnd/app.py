@@ -66,6 +66,38 @@ def login():
         
         return result
 
+@app.route('/register', methods=['POST', 'GET'])
+def register():
+    result = ''
+    mysql = get_connection()
+
+    if request.method == 'POST':
+        data = request.get_json()
+        name = data.get('name')
+        acount = data.get('acount')
+        password = data.get('password')
+        try:
+            with mysql.cursor() as cursor:
+                cursor.execute('SELECT UserEmail FROM Users WHERE UserEmail = %s',(acount))
+                selectResult = cursor.fetchone()
+                if selectResult:
+                    result = 'Registered'
+                else:
+                    try:
+                        cursor.execute('INSERT INTO Users (UserEmail, UserPassword, Username) VALUES (%s, %s, %s)',(acount, password, name))
+                        mysql.commit()
+                        result = 'Success'
+                    except Exception as insert_error:
+                        mysql.rollback()
+                        print(str(insert_error))
+                        result = 'Error'
+        except Exception as e:
+            print(str(e))
+            result = 'Error'
+        finally:
+            cursor.close()
+
+        return result
 if __name__ == '__main__':
     app.run(
         debug=True,
