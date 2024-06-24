@@ -1,80 +1,170 @@
 <template>
     <div :style="{ display: 'flex', flexDirection: 'column', gap: '1rem' }">
       <div id="userBox">
-          <icon-user @click="loginClick" class="userCard" title="个人信息"/>   
-          <!--登陆界面对话框-->
-            <a-modal v-model:visible="loginVisible" title="账号登入" @cancel="loginCancel" @before-ok="loginBeforeOk" width="520px" >
-                <a-form :model="loginForm">
-                    <a-form-item field="acount" label="邮箱：">
-                      <a-input 
-                      v-model="loginForm.acount"
-                      placeholder="请输入邮箱" allow-clear />
-                    </a-form-item>
-
-                    <a-form-item field="password" label="密码：">
-                      <a-input-password
-                      v-model="loginForm.password"
-                      placeholder="请输入密码"
-                      allow-clear
-                      />
-                    </a-form-item>
-
-                    <a-button type="primary" @click="login">登录</a-button> 
-                </a-form>
-                <a-link @click="newAcount">注册新用户</a-link>               
-            </a-modal>
-            <!--注册界面对话框-->
-            <a-modal v-model:visible="registerVisible" title="注册" @cancel="registerCancel" @before-ok="registerBeforeOk" width="550px">
-              <a-form :model="registerForm">
-                <a-form-item field="acount">
+        <icon-menu-fold @click="selfInfoClick" v-if="ISLOGOIN" class="userCard"/>
+        <icon-user v-else @click="loginClick" class="userCard" title="个人信息"/>   
+        <!--登陆界面对话框-->
+          <a-modal v-model:visible="loginVisible" 
+          title="账号登入"
+          width="520px"
+          ok-text="登录"
+          @ok="login"
+          draggable>
+              <a-form :model="loginForm">
+                  <a-form-item field="acount" label="邮箱：">
                     <a-input 
-                    v-model="registerForm.name"
-                    placeholder="请输入您的用户名"/>
-                </a-form-item>
-                <a-form-item field="acount">
-                    <a-input 
-                    v-model="registerForm.acount"
-                    placeholder="请输入您的邮箱"/>
-                </a-form-item>
-                <a-form-item field="password">
+                    v-model="loginForm.acount"
+                    placeholder="请输入邮箱" allow-clear />
+                  </a-form-item>
+
+                  <a-form-item field="password" label="密码：">
                     <a-input-password
-                    v-model="registerForm.password" 
-                    placeholder="请输入您的密码"/>
-                </a-form-item>
-                <a-form-item field="confirmPassword">
-                    <a-input-password
-                    v-model="registerForm.confirmPassword"
-                    placeholder="请确认您的密码"
+                    v-model="loginForm.password"
+                    placeholder="请输入密码"
+                    allow-clear
                     />
-                </a-form-item>
-                <a-button type="primary" @click="register">注册</a-button>
+                  </a-form-item>
+                  <a-form-item>
+                    <a-link @click="newAcount">注册新用户</a-link>
+                    <a-link @click="forgetPassword">忘记密码</a-link>
+                  </a-form-item>
+                  <a-form-item no-style="true">
+                    <a-button type="primary" @click="login">登录</a-button>
+                  </a-form-item>
               </a-form>
-            </a-modal>                                              
-
-
-            <hr>
-            <a-popover position="left">
-               <icon-more class="userCard"/>
-               <template #content>
+              <template #footer>
+                  <a-form formItemLayout="{ wrapperCol: { span: 24 }, labelCol: { span: 0 } }">
+                  </a-form>
+              </template>
+          </a-modal>
+          <!--注册界面对话框-->
+          <a-modal 
+          v-model:visible="registerVisible" 
+          title="注册" 
+          @ok="register"
+          ok-text="注册"
+          width="550px"
+          draggable>
+            <a-form :model="registerForm">
+              <a-form-item field="name" label="用户名：">
+                  <a-input 
+                  v-model="registerForm.name"
+                  placeholder="请输入您的用户名"/>
+              </a-form-item>
+              <a-form-item field="acount" label="邮箱：">
+                  <a-input 
+                  v-model="registerForm.acount"
+                  placeholder="请输入您的邮箱"/>
+              </a-form-item>
+              <a-form-item field="password" label="密码：">
+                  <a-input-password
+                  v-model="registerForm.password" 
+                  placeholder="请输入您的密码"/>
+              </a-form-item>
+              <a-form-item field="confirmPassword" label="确认密码">
+                  <a-input-password
+                  v-model="registerForm.confirmPassword"
+                  placeholder="请确认您的密码"
+                  />
+              </a-form-item>
+              <a-form-item no-style="true">
+                    <a-button type="primary" @click="register">注册</a-button>
+              </a-form-item>
+            </a-form>
+            <template #footer>
+                  <a-form formItemLayout="{ wrapperCol: { span: 24 }, labelCol: { span: 0 } }">
+                  </a-form>
+            </template>
+          </a-modal>
+          <!--个人信息对话框-->
+          <a-modal 
+          v-model:visible="selfInfoVisible"
+          title="个人信息"
+          width="520px">
+          <a-space :style="{display:'flex',flexDirection:'column',gap:'0.6rem'}">
+            <img
+            id="avator"
+            :style="{width:'4.5rem'}"
+            src="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp" alt="头像">
+            <h2>textname</h2>
+            <h3>email</h3>
+            <a-space >
+              <a-tabs default-active-key="1" :style="{height:'16rem'}">
+                <a-tab-pane key="1" title="帖子">
+                  Content of Tab Panel 1
+                </a-tab-pane>
+                <a-tab-pane key="2" title="规划">
+                  Content of Tab Panel 2
+                </a-tab-pane>
+              </a-tabs>
+            </a-space>
+          </a-space>
+          <template #footer>
+            <a-form formItemLayout="{ wrapperCol: { span: 24 }, labelCol: { span: 0 } }">
+            </a-form>
+          </template>
+          </a-modal>
+          <hr>
+          <a-tooltip content="路线规划" position="left">
+              <icon-check-square @click="roadPlanClick" class="iconBox" title="路线规划"/>
+          </a-tooltip>
+          <a-modal 
+          v-model:visible="roadPlanVisible"
+          title="添加路线">
+          </a-modal>
+        </div>
+        <div class="functionalModule">
+          <a-tooltip content="发布讨论" position="left">
+            <a-space>
+              <icon-plus @click="addTalkClick" class="iconBox" title="添加留言" />
+            </a-space>
+            <a-modal 
+            title="发布讨论"
+            v-model:visible="addTalkVisible"
+            ok-text="发布"
+            @ok="talk"
+            >
+              <a-form :model="addTalkForm">
+                <a-form-item field="location" label="标题：">
+                  <a-input 
+                  :style="{width:'320px'}"/>
+                </a-form-item>
+                <a-form-item field="location" label="地点：">
+                  <a-input 
+                  :style="{width:'320px'}"/>
+                </a-form-item>
+                <a-form-item 
+                id="talkContent"
+                field="location" 
+                label="内容：" 
+                >
+                <a-textarea 
+                  auto-size="true"
+                  placeholder="添加回复" 
+                  allow-clear
+                  :style="{width:'320px',height:'140px'}"/>
+                </a-form-item>
+              </a-form>
+            </a-modal>
+          </a-tooltip>
+        </div>
+        <div class="functionalModule">
+          <a-popover position="left">
+            <a-space>
+              <icon-more class="userCard"/>
+            </a-space>
+              <template #content>
                 <h4>开发者信息</h4>
                 <a-space>
                   <a-link href="C:\Users\王\Desktop\网页\HTML\w.html" >Mr.W</a-link>
                 </a-space>
               </template>
-            </a-popover>
-          
-        </div>
-        <div class="functionalModule">
-          <a-tooltip content="添加留言" position="left">
-                <icon-plus class="iconBox" title="添加留言"/>
-            </a-tooltip>
-        </div>
-        <div class="functionalModule">
-            <a-tooltip content="历史记录" position="left">
-                <icon-clock-circle class="iconBox" title="历史记录"/>
-            </a-tooltip>
+          </a-popover>
         </div>
 
+        <a-tooltip content="旅行足迹" position="right" >
+            <a-switch id="switch" type="line" v-model="isDist" @change="addDist"/>
+        </a-tooltip>
     </div>
 </template>
 
@@ -82,6 +172,13 @@
     hr{
       width: 2rem;
       margin: auto;
+    }
+    #avator{
+      border-radius: 3rem;
+    }
+
+    #talkContent{
+      height: 100px
     }
 
     #userBox {
@@ -111,38 +208,31 @@
       height: 2.1rem;
       cursor: pointer;
     }
-
 </style>
 
 <script setup>
-  import { Notification } from '@arco-design/web-vue';  //引入通知组件
+  import { Notification, Radio } from '@arco-design/web-vue';  //引入通知组件
   import axios from 'axios'                             //引入axios
-  import { reactive, ref, } from 'vue';                 //引入reactive和ref
+  import { reactive,onMounted, onUnmounted, ref, } from 'vue';                 //引入reactive和ref
+  import bus from '@/utils/eventBus';
+  import EVENTS from '@/utils/EVENTS';
+
 
   const loginVisible = ref(false);
+  const ISLOGOIN = ref(false)
 
   const loginClick = () => {
     loginVisible.value = true;
   };                                                    //点击函数visible.value = true;来让绑定visible的对话框显示
-
-  const loginBeforeOk = (done) => {
-    console.log(loginForm)
-    window.setTimeout(() => {
-      done()
-      // prevent close
-      // done(false)
-    }, 3000)
-  };                                                    //点击对话框的“确认”后可以执行一些判定，来决定对话框是否关闭，或者进行其他操作
-
-  const loginCancel = () => {                           //点击对话框“取消”后运行的操作
-    loginVisible.value = false;
-  };                                                    //点击函数visible.value = false;来让绑定visible的对话框隐藏
+                                          
+                                            
   const loginForm = reactive({
     acount: '',
-    password: ''
+    password: '',
   });                                      
 
-//登录函数，通过axios.post()来向后端发送请求，根据后端返回的数据来判断登录是否成功
+  //登录函数，通过axios.post()来向后端发送请求，根据后端返回的数据来判断登录是否成功
+
   const login = (event) => {
 
     event.preventDefault(); // 防止表单的默认提交行为
@@ -180,6 +270,7 @@
             content: `欢迎回来,` + response.data
           });
           loginVisible.value = false;
+          ISLOGOIN.value = true;
         }
       })
       .catch(function(error){
@@ -202,18 +293,6 @@
     confirmPassword: ''
   });     
 
-  const registerBeforeOk = (done) => {
-    console.log(registerForm)
-    window.setTimeout(() => {
-      done()
-        //prevent close
-        //done(false)
-    }, 3000)
-  };    
-
-  const registerCancel = () => {
-    registerVisible.value = false;
-  }
 
   const register = (event) => {
     event.preventDefault(); // 防止表单的默认提交行为
@@ -286,6 +365,94 @@
             console.log(error);
         });
     }
-};
+  };
+
+  const selfInfoVisible =ref(false)
+  const selfInfoClick = () =>{
+    selfInfoVisible.value = true
+  }
+  const selfInfoForm = reactive({
+    avator:'',
+    name:'',
+    todoList:'',
+    ralkList:''
+  })
+
+  const roadPlanVisible = ref(false)
+  const roadPlanClick = () =>{
+    roadPlanVisible.value = true
+  }
+  const roadPlanForm = reactive({
+    title:'',
+    startPoint:'',
+    endPoint:''
+  })
+
+  const addTalkVisible= ref(false);
+  const addTalkClick = () => {
+    addTalkVisible.value =true
+  }
+  const addTalkForm = reactive({
+  location:'',
+  title:'',
+  content:''
+  })
+
+  const talk = (event) =>{
+      event.preventDefault(); // 防止表单的默认提交行为
+      if (ISLOGOIN.value) {
+
+      }
+      else{
+        Notification.error({
+            title: '发布失败',
+            content: '请登陆后重试'
+        });
+      }
+  }
+
+  const isDist=ref(false)
+  let map = ref(null);
+  let dist = ref(null)
+
+  const initMapListeners = () => {
+    if (map.value) {
+      function addDist(isDist){
+        if(isDist){
+          map.value.addDistrictLayer(dist)
+        }
+        else{
+          map.value.removeDistrictLayer(dist)
+        }
+      }
+    }
+    else {
+      console.warn("Map instance not ready yet.");
+    }
+  }
+
+  const receiveMapInstance = (data) => {
+      map.value = data;
+  };
+
+  const receiveDistInstance = (data) =>{
+      dist.value =data;
+  }
+  const removeMapListeners = () => {
+    if (map.value) {
+      map.value.removeEventListener("click", initMapListeners); // 修正：移除正确的监听器
+    }
+  };
+
+  onMounted(() => {
+    bus.on(EVENTS.SENDTOBROTHER, receiveMapInstance);
+    bus.on(EVENTS.SEND_DIST, receiveDistInstance);
+  });
+
+  onUnmounted(() => {
+    bus.off(EVENTS.SENDTOBROTHER, receiveMapInstance);
+    bus.off(EVENTS.SEND_DIST, receiveDistInstance);
+    removeMapListeners();
+  });
 
 </script>

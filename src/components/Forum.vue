@@ -4,19 +4,20 @@
         <icon-message  class="userCard" title="个人信息" @click="handleClick" />
             <a-drawer :width="440" :visible="visible" @ok="handleOk" @cancel="handleCancel" unmountOnClose >
                 <template #title>
-                    论坛
+                    <a-space align="center" fill="true">
+                    <a-tooltip content="添加留言" position="right">
+                        <icon-plus 
+                        @click="addTalkClick" 
+                        id="iconBox" 
+                        title="添加留言" 
+                        stroke-width="5"
+                        size="36px"/>
+                    </a-tooltip>
+                    <div id="title">讨论区</div> 
+                    </a-space>
                 </template>
                 <template #footer>
                     <a-form formItemLayout="{ wrapperCol: { span: 24 }, labelCol: { span: 0 } }">
-                        <a-form-item label="帖子标题">
-                            <a-input v-model="postTitle" placeholder="请输入帖子标题" />
-                        </a-form-item>
-                        <a-form-item label="帖子内容">
-                            <a-textarea v-model="postContent" placeholder="请输入帖子内容" rows="4" />
-                        </a-form-item>
-                        <a-form-item>
-                            <a-button type="primary" @click="createPost">发布帖子</a-button>
-                        </a-form-item>
                     </a-form>
                 </template>
                 <a-comment author="postTitle" content="">
@@ -42,6 +43,9 @@
                         <span class="action" key="reply">
                             <IconMessage /> Reply
                         </span>
+                        <a-textarea 
+                        placeholder="Please enter something" 
+                        allow-clear/>
                     </template>
                     <template #avatar>
                         <a-avatar>
@@ -54,6 +58,18 @@
     </div>
   </template>
   
+  <style scoped>
+    #title{
+        margin: 8rem;
+    }
+    #iconBox{
+        background-color: aliceblue;
+        border: 1px solid argb(255,255,255,0.5);
+        border-radius: 0.5rem;
+        padding: 4px;
+    }
+  </style>
+
   <script>
   import { ref } from 'vue';
   import { Form as AForm, Input as AInput, Textarea as ATextarea, Button as AButton } from '@arco-design/web-vue';
@@ -80,9 +96,6 @@
                 postTitle.value = '';
                 postContent.value = '';
 
-
-
-                
             };
 
             const onLikeChange = () => {
