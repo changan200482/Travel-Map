@@ -24,7 +24,7 @@
                 <a-link @click="newAcount">注册新用户</a-link>               
             </a-modal>
             <!--注册界面对话框-->
-            <a-modal v-model:visible="registerVisible" title="注册" @cancel="registerCancel" @before-ok="registerBeforeOk" width="550px">
+            <a-modal :mask="false"  v-model:visible="registerVisible" title="注册" @cancel="registerCancel" @before-ok="registerBeforeOk" width="550px">
               <a-form :model="registerForm">
                 <a-form-item field="acount">
                     <a-input 

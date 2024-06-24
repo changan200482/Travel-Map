@@ -80,44 +80,44 @@ onMounted(() => {
             // 设置当前点击区划为透明
            e.currentTarget.setFillOpacity(0); // 设置透明度，例如
         });
-        dist.addEventListener('click', function (e) {
+        //dist.addEventListener('click', function (e) {
     // 假设e.currentTarget.getBounds()可以获取到当前点击行政区划的边界
     
-    var bounds = e.currentTarget.getBounds();
-    console.log(bounds);
-    // 创建一个半透明的遮罩层
-    var maskLayer = new BMapGL.GroundOverlay(
-        bounds.getSouthWest(), // 西南角坐标
-        bounds.getNorthEast(),
-        console.log("我是天子！"),
-        {
-            opacity: 0, // 设置遮罩层的透明度
-            bounds: bounds // 设置遮罩层显示的边界范围
-        }
-    );
-    map.addOverlay(maskLayer); // 将遮罩层添加到地图上
+    // var bounds = e.currentTarget.getBounds();
+    // console.log(bounds);
+    // // 创建一个半透明的遮罩层
+    // var maskLayer = new BMapGL.GroundOverlay(
+    //     bounds.getSouthWest(), // 西南角坐标
+    //     bounds.getNorthEast(),
+    //     console.log("我是天子！"),
+    //     {
+    //         opacity: 0, // 设置遮罩层的透明度
+    //         bounds: bounds // 设置遮罩层显示的边界范围
+    //     }
+    // );
+    // map.addOverlay(maskLayer); // 将遮罩层添加到地图上
 
     // 如果需要，你可以存储这个遮罩层的引用，以便于后续操作，比如移除或调整透明度
     // ...
-});
+//});
         function sendNumber() {
             bus.emit(EVENTS.SENDTOBROTHER, map) 
         }  // 传值，自定义事件向兄弟组件传递数据
         sendNumber();
 
-        map.addEventListener('click',function(e){
-            var latlng = e.latlng;
-            console.log(latlng);
-            var startAddress = null;
-            geoc.getLocation(latlng, function(rs){
-                if(!startAddress){
-                    var addComp = rs.addressComponents;
-                   startAddress =  addComp.city;
-                  console.log(startAddress);
-                  map.centerAndZoom(startAddress, 10);
-                }
-            });
-        });
+        // map.addEventListener('click',function(e){
+        //     var latlng = e.latlng;
+        //     console.log(latlng);
+        //     var startAddress = null;
+        //     geoc.getLocation(latlng, function(rs){
+        //         if(!startAddress){
+        //             var addComp = rs.addressComponents;
+        //            startAddress =  addComp.city;
+        //           console.log(startAddress);
+        //           map.centerAndZoom(startAddress, 10);
+        //         }
+        //     });
+        // });
     }
     catch (error) {
         console.error('脚本加载失败:', error);
