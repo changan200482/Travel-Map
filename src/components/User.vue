@@ -5,6 +5,7 @@
         <icon-user v-else @click="loginClick" class="userCard" title="个人信息"/>   
         <!--登陆界面对话框-->
           <a-modal v-model:visible="loginVisible" 
+          mask="false"
           title="账号登入"
           width="520px"
           ok-text="登录"
@@ -39,6 +40,7 @@
           </a-modal>
           <!--注册界面对话框-->
           <a-modal 
+          mask="false"
           v-model:visible="registerVisible" 
           title="注册" 
           @ok="register"
@@ -76,6 +78,7 @@
                   </a-form>
             </template>
           </a-modal>
+
           <!--个人信息对话框-->
           <a-modal 
           v-model:visible="selfInfoVisible"
@@ -104,15 +107,58 @@
             </a-form>
           </template>
           </a-modal>
+
+
           <hr>
+
+
           <a-tooltip content="路线规划" position="left">
               <icon-check-square @click="roadPlanClick" class="iconBox" title="路线规划"/>
           </a-tooltip>
           <a-modal 
           v-model:visible="roadPlanVisible"
-          title="添加路线">
+          title="添加路线"
+          mask="false"
+          hide-cancel="true"
+          ok-text="添加路线">
+            <a-form>
+              <a-form-item label="添加地点：">
+                
+                <a-space>
+                  <a-input
+                  :style="{width:'200px'}" 
+                  placeholder="请输入需要查询的地点" 
+                  button-text="查询" 
+                  search-button
+                  v-model="searchInput"
+                  id="suggestId"/>
+                  <a-button type="primary" @click="locationView(searchInput)" >查询</a-button>
+                  <a-button type="primary" >查看路线</a-button>
+                </a-space>
+
+              </a-form-item>
+              <a-form-item label="检索列表：">
+                <a-select
+                  :style="{width:'320px'}"
+                  placeholder="点击查看"
+                  @dropdown-scroll="handleScroll"
+                  @dropdown-reach-bottom="handleReachBottom"
+                >
+                  <a-option v-for="item in localResult">{{ item }}</a-option>
+              </a-select>
+              </a-form-item>
+
+              <a-form-item label="地点：">
+                <a-space>
+                  <a-tag size="large" closable>Tag</a-tag>
+                </a-space>
+              </a-form-item>
+
+            </a-form>
           </a-modal>
         </div>
+
+
         <div class="functionalModule">
           <a-tooltip content="发布讨论" position="left">
             <a-space>
@@ -169,6 +215,10 @@
 </template>
 
 <style scoped>
+    #roadView{
+      display: flex;
+      justify-content: flex-end;
+    }
     hr{
       width: 2rem;
       margin: auto;
@@ -213,7 +263,7 @@
 <script setup>
   import { Notification, Radio } from '@arco-design/web-vue';  //引入通知组件
   import axios from 'axios'                             //引入axios
-  import { reactive,onMounted, onUnmounted, ref, } from 'vue';                 //引入reactive和ref
+  import { reactive,onMounted, onUnmounted, ref} from 'vue';                 //引入reactive和ref
   import bus from '@/utils/eventBus';
   import EVENTS from '@/utils/EVENTS';
 
@@ -411,48 +461,161 @@
       }
   }
 
-  const isDist=ref(false)
-  let map = ref(null);
-  let dist = ref(null)
 
-  const initMapListeners = () => {
-    if (map.value) {
-      function addDist(isDist){
-        if(isDist){
-          map.value.addDistrictLayer(dist)
+  //地图服务
+  const isDist=ref(false)
+  const searchInput = ref(null)
+  let local = ref(null);
+  let localResult = ref(null)
+  let map = ref(null);
+  let ac =ref(null)
+  let dist = ref(null);
+  let myValue = ref(null);
+  let selectedPlaces = [];
+  let promises = []; 
+  let waypoints=[];
+
+
+  var locationView
+  var locationView2
+  
+
+  bus.on(EVENTS.SENDTOBROTHER, (data) => {
+    map.value = data;
+
+    if (!map.value) {
+      console.error('地图实例尚未准备好');
+      return;
+    }
+
+    locationView = (loc) =>{
+      var options = {
+		  onSearchComplete: function(results){
+			// 判断状态是否正确
+          if (local.value.getStatus() == BMAP_STATUS_SUCCESS){
+            var s = [];
+            for (var i = 0; i < results.getCurrentNumPois(); i ++){
+              s.push(results.getPoi(i).title)
+              // s.push(results.getPoi(i).title + ", " + results.getPoi(i).address);
+            }
+            console.log(s);
+            localResult.value = s;
+          }
         }
-        else{
-          map.value.removeDistrictLayer(dist)
-        }
+      };
+      local.value = new BMapGL.LocalSearch(map.value, options);
+      local.value.setLocation("山东省")
+      local.value.search(loc);
+    }
+    locationView2 = () =>{
+      ac.value = new BMapGL.Autocomplete({ 
+        "input": "suggestId", 
+        "location": map.value 
+      });
+      console.log(ac.value.getResults())
+      localResult.value = ac.value.getResults()
+    }
+
+
+    // 创建 Autocomplete 实例
+
+
+    ac.value.addEventListener("onconfirm", function(e) {
+        var _value = e.item.value;
+
+        myValue.value = _value.province + _value.city + _value.district + _value.street + _value.business;
+        setPlace();
+    });
+
+    function calculateRoute(startPoint, endPoint) {
+      var driving = new BMapGL.DrivingRoute(map.value, {
+        renderOptions: {map: map.value, autoViewport: true}
+      });
+      if (selectedPlaces.length >= 2) {
+      driving.search(startPoint, endPoint,{
+          waypoints:[waypoints]
+          });
+      }
+      else{
+          driving.search(startPoint, endPoint);
       }
     }
-    else {
-      console.warn("Map instance not ready yet.");
+
+    function getAddressCoordinate(address) {
+      return new Promise((resolve, reject) => {
+          var geocoder = new BMapGL.Geocoder();
+          geocoder.getPoint(address, function(point) {
+              if (point) {
+                  resolve(point);
+              } else {
+                  reject("未能解析地址为坐标");
+              }
+          }, "北京市"); // 最后一个参数为城市名，提高解析精度
+      });
     }
-  }
+    function setPlace() {
+      map.value.clearOverlays(); // 清除地图上所有覆盖物
 
-  const receiveMapInstance = (data) => {
-      map.value = data;
-  };
+      // 如果 selectedPlaces 中有两个及以上的地点，开始查询路线
+      if (selectedPlaces.length >= 2) {
+        for (let i = 1; i < selectedPlaces.length - 1; i++) {
+          waypoints.push(selectedPlaces[i]);
+        }
 
-  const receiveDistInstance = (data) =>{
-      dist.value =data;
-  }
-  const removeMapListeners = () => {
-    if (map.value) {
-      map.value.removeEventListener("click", initMapListeners); // 修正：移除正确的监听器
+        // 现在，waypoints 数组包含了除首尾之外的所有地点
+        console.log("中间途径点:", waypoints);
+
+        for (let i = 0; i < selectedPlaces.length - 1; i++) {
+          promises.push(
+            getAddressCoordinate(selectedPlaces[i])
+              .then((start) =>
+                getAddressCoordinate(selectedPlaces[i + 1]).then((end) => calculateRoute(start, end))
+              )
+              .catch((err) => console.error(err))
+          );
+        }
+
+        // 使用 Promise.all 来等待所有路线查询完成
+        Promise.all(promises)
+          .then(() => console.log("所有路线查询完成"))
+          .catch((err) => console.error(err));
+
+        //G("suggestId").value = ""; // 无论成功还是失败，都清空输入框
+      } 
+      else {
+        // 使用 Promise 处理单个地点的搜索逻辑，保持原有功能
+        new Promise((resolve, reject) => {
+          var local = new BMapGL.LocalSearch(map.value, {
+            onSearchComplete: function (results) {
+              if (local.getStatus() === BMAP_STATUS_SUCCESS) {
+                resolve(results);
+              } else {
+                reject("搜索失败，状态码：" + local.getStatus());
+              }
+            },
+          });
+          local.search(myValue.value);
+        })
+        .then((results) => {
+          //console.log(results);console.log(results.getNumPois())
+          if (results.getNumPois() > 0) {
+            var pp = results.getPoi(0).point; // 获取第一个智能搜索的结果
+            //console.log(pp)
+            map.value.centerAndZoom(pp, 18);
+            map.value.addOverlay(new BMapGL.Marker(pp)); // 添加标注
+          } else {
+            alert("没有找到匹配的地点");
+          }
+        })
+        .catch((errorMessage) => {
+          alert("搜索过程中出现问题：" + errorMessage);
+        })
+        .finally(() => {
+          document.getElementById("suggestId").value = ""; // 无论成功还是失败，都清空输入框
+          //G("suggestId").value = ""; // 无论成功还是失败，都清空输入框
+        });
+      }
     }
-  };
-
-  onMounted(() => {
-    bus.on(EVENTS.SENDTOBROTHER, receiveMapInstance);
-    bus.on(EVENTS.SEND_DIST, receiveDistInstance);
-  });
-
-  onUnmounted(() => {
-    bus.off(EVENTS.SENDTOBROTHER, receiveMapInstance);
-    bus.off(EVENTS.SEND_DIST, receiveDistInstance);
-    removeMapListeners();
   });
 
 </script>

@@ -6,7 +6,7 @@ import Forum from '../components/Forum.vue'
 </script>
 
 <template>
-	<MapTools id="maptools"/>
+	<!-- <MapTools id="maptools"/> -->
 	<User id="user"/>
 	<MapView/>
 	<Forum id="forum"/>
@@ -20,13 +20,13 @@ import Forum from '../components/Forum.vue'
 		z-index: 1000;
 		padding: 35px;
 	}
-	#maptools {
+	/* #maptools {
 		position: absolute;
 		bottom: 0;
 		left: 0;
 		z-index: 1000;
 		padding: 35px;
-	}
+	} */
 	#forum {
 		position: absolute;
 		top: 0;
