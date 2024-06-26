@@ -174,7 +174,7 @@
                     </template>
                   </a-space>
                   <a-space>
-                    <a-input :style="{width:'220px'}" placeholder="描述路线" default-value="默认路线" allow-clear :model-value="addInfoInput"/>
+                    <a-input :style="{width:'220px'}" placeholder="描述路线" default-value="默认路线" allow-clear v-model="addInfoInput"/>
                     <a-button type="primary" @click="savePlace">添加路线</a-button>
                   </a-space>
                 </a-space>
