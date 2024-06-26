@@ -20,7 +20,7 @@
                     <a-form formItemLayout="{ wrapperCol: { span: 24 }, labelCol: { span: 0 } }">
                     </a-form>
                 </template>
-                <a-comment author="postTitle" content="">
+                <a-comment author="正在开发中。。。" content="钱不够，演员未定，剧本暂无。。。（bushi）">
                     <template #actions>
                         <span class="action" key="heart" @click="onLikeChange">
                             <span v-if="like">

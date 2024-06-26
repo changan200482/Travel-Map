@@ -98,6 +98,46 @@ def register():
             cursor.close()
 
         return result
+@app.route('/savePlace', methods=['POST', 'GET'])  
+def savePlace():
+    result = ''
+    mysql = get_connection()
+
+    if request.method == 'POST':
+        data = request.get_json()
+        places = data.get('place')
+        acount = data.get('acount')
+        roadInfo = data.get('roadInfo')
+        try:
+            with mysql.cursor() as cursor:
+                cursor.execute('SELECT UserID FROM Users WHERE UserEmail = %s',(acount))
+                selectResult = cursor.fetchone()
+                print(selectResult[0])
+                if selectResult:
+                    try:
+                        for place in places:
+                            point = place.get('point')
+                            lng = point.get('lng')
+                            lat = point.get('lat')
+                            title = place.get('title')
+                            address = place.get('address')
+                            cursor.execute('INSERT INTO points (lng, lat, Title, Address, UserID, roadInfo) VALUES (%s, %s, %s, %s, %s, %s)',(lng, lat, title, address, selectResult[0], roadInfo))
+                            mysql.commit()
+                        result = 'Success'
+                    except Exception as insert_error:
+                        mysql.rollback()
+                        print(str(insert_error))
+                        result = 'Error'
+                else:
+                    result = 'notfound'
+        except Exception as e:
+            print(str(e))
+            result = 'Error'
+        finally:
+            cursor.close()
+
+        return result  
+
 if __name__ == '__main__':
     app.run(
         debug=True,
